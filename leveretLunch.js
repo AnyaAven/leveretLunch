@@ -100,17 +100,17 @@ function findStart(garden) {
 
     const coords = [];
 
-    for (let i = 0; i < 2; i++) { // possibly twice
-        coords.push({y, x, value: garden[y][x]})
+    coords.push({y, x, value: garden[y][x]})
+
+    if (isRowsEven) {
+        coords.push({y, x: x - 1, value: garden[y][x - 1]});
+    }
+
+    if (isColsEven) {
+        coords.push({y: y - 1, x, value: garden[y - 1][x]})
 
         if (isRowsEven) {
-            coords.push({y, x: x - 1, value: garden[y][x - 1]});
-        }
-
-        if (isColsEven) {
-            y--;
-        } else {
-            break; // Would breaking be more readable or add  return maxValue(coords);
+            coords.push({y: y - 1, x: x - 1, value: garden[y - 1][x - 1]});
         }
     }
 
