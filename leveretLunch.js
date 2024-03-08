@@ -1,4 +1,4 @@
-// Maximum 4 centers
+/*// Maximum 4 centers
 
 //base case check if any carrots are available
 
@@ -12,7 +12,8 @@
 
 //if it's on the edge, need to do something
 
-//change cell to 0 once eaten
+//change cell to 0 once eaten*/
+
 
 //gavin
 function findNearbyCells(currPosition, garden) { // edge of the garden
