@@ -1,101 +1,47 @@
-/*// Maximum 4 centers
 
-//base case check if any carrots are available
+/**
+ * Given a garden, find out how many carrots a
+ * leveret will eat before taking a nap! Rules:
+ * - Leveret always starts at the center cell. (If
+ * there are multiple centers, use the one with the higest value)
+ * - After eating those carrots, Leveret moves W, N, E, or S to
+ * the cell with the most carrots. (Ties are resolved by cell that
+ * comes first, following order of WNES).
+ * - Leveret eats the carrots at the new cell, and continues until
+ * no nearby cells contain carrots.
+ *
+ * @param {Array<Array<Number>>} garden Matrix of carrot counts
+ * @returns {Number} Amount of carrots eaten.
+ */
+function carrotsEaten(garden) {
+    const eatenGarden = JSON.parse(JSON.stringify(garden));
+    let amount = 0;
+    let currPosition = findStartPosition(eatenGarden);
+    let eating = true;
 
-// findStart() // return [y,x] // [cols, rows]
-//highestDirection() // include tie scenario
-//eatCarrots() - function how many carrots needs to be totaled
+    while (eating) {
+        amount += eatCarrots(currPosition, eatenGarden);
+        const nextPosition = findNextPosition(currPosition, eatenGarden);
 
-
-//directions have to go through all of them
-//only
-
-//if it's on the edge, need to do something
-
-//change cell to 0 once eaten*/
-
-
-//gavin
-function findNearbyCells(currPosition, garden) { // edge of the garden
-    const directions = {w: 0, n: 0, e: 0, s: 0, position: currPosition};
-    const y = currPosition[0];
-    const x = currPosition[1];
-    const numRows = garden.length - 1;
-    const numCols = garden[0].length - 1;
-
-    if (x - 1 >= 0) {
-        directions.w = garden[y][x - 1];
-    }
-    if (y - 1 >= 0) {
-        directions.n = garden[y - 1][x];
-    }
-    if (x + 1 <= numCols) {
-        directions.e = garden[y][x + 1];
-    }
-    if (y + 1 <= numRows) {
-        directions.s = garden[y + 1][x];
-    }
-    return directions;
-
-} //return directions = {w: 0, n: 0, e: 0, s: 0, position: currPostion};
-
-//anya
-function highestDirection(obj) { //obj of always 4
-    const orderOfDirections = ["w", "n", "e", "s"];
-    let highestVal = 0;
-    let winningDirection = "none";
-
-    for (let direction of orderOfDirections) {
-        if (highestVal < obj[direction]) {
-            highestVal = obj[direction];
-
-            winningDirection = direction;
+        if (nextPosition.length === 0) {
+            eating = false;
         }
+        currPosition = nextPosition;
     }
 
-    let y = obj.position[0];
-    let x = obj.position[1];
-
-    switch (winningDirection) {
-        case "w":
-            return [y, x - 1];
-
-        case "n":
-            return [y - 1, x];
-
-        case "e":
-            return [y, x + 1];
-
-        case "s":
-            return [y + 1, x];
-
-        case "none":
-            return obj.position; // return original position if we did not move
-    }
-} // return [y,x]
-
-function maxValueCoords(arrOfObjs) {
-    let highest = 0;
-    let coords;
-    for (let obj of arrOfObjs) {
-        if (highest < obj.value) {
-            highest = obj.value
-            coords = [obj.y, obj.x]
-        }
-    }
-
-    return coords;
-} // return [y,x]
-
-function isEven(num) {
-    return num % 2 === 0
+    return amount;
 }
 
-function findStart(garden) {
+/**
+ * Function that finds the 1, 2, or 4 possible starting
+ * cells and determines starting cell based on carrot count.
+ * @param {Array<Array<Number>>} garden Matrix of carrot counts
+ * @returns {Array<Number>} Garden coordinate in form of [y, x]
+ */
+function findStartPosition(garden) {
     const isColsEven = isEven(garden.length);
     const isRowsEven = isEven(garden[0].length);
 
-    //Grabs the bottom right of the center
     let y = Math.floor(garden.length / 2);
     let x = Math.floor(garden[0].length / 2);
 
@@ -116,54 +62,89 @@ function findStart(garden) {
     }
 
     return maxValueCoords(coords);
-} // returns [y,x]
-
-//anya
-function eatCarrots(currPosition, eatenGarden) { //receives [y,x], eatenGarden
-    const [y, x] = currPosition;
-    let carrotsNum = eatenGarden[y][x]
-    eatenGarden[y][x] = 0;
-
-    return carrotsNum
-} // return  amount eaten
-
-function areArraysEqual(arr1, arr2) {
-    // different lengths guarantee they are not equal.
-    if (arr1.length !== arr2.length) {
-        return false;
-    }
-
-    for (let i = 0; i < arr1.length; i++) {
-        // Fail early if any comparison isn't equal.
-        if (arr1[i] !== arr2[i]) {
-            return false;
-        }
-    }
-
-    // Arrays are equal!
-    return true;
 }
 
-function carrotsEaten(garden) {
-    const eatenGarden = [...garden];
-    let amount = 0;
-    let currPosition = findStart(eatenGarden);
-    let eating = true;
+/**
+ * Helper function that determines if a num
+ * is even
+ */
+function isEven(num) {
+    return num % 2 === 0;
+}
 
-    while (eating) {
-        amount += eatCarrots(currPosition, eatenGarden)
-
-        let nearbyCells = findNearbyCells(currPosition, eatenGarden);
-        let nextPosition = highestDirection(nearbyCells);
-
-        if (areArraysEqual(currPosition, nextPosition)) {
-            eating = false;
+/**
+ * Takes a list of coord objects and finds
+ * the coord that has the highest value greater than 0.
+ * @param {Array<Object>} coords Obj format of {position: {y, x}, value: 0}
+ * @returns Coordinate pair in form of [y, x].
+ * Defaults to an empty Array if no values > 0
+ */
+function maxValueCoords(coords) {
+    let max = 0;
+    let position = [];
+    for (let coord of coords) {
+        if (max < coord.value) {
+            max = coord.value;
+            position = [coord.position.y, coord.position.x];
         }
-        currPosition = nextPosition;
     }
 
-    //console.log(amount)
-    return amount;
+    return position;
+}
+
+/**
+ * Eats the number of carrots in the currPosition of
+ * the garden and updates value of currPosition to 0.
+ * @param {Array<Number>} currPosition [y, x] coordinate
+ * @param {Array<Array<Number>>} garden Matrix of carrot values
+ * @returns Number of carrots eaten from currPosition
+ */
+function eatCarrots(currPosition, garden) {
+    const [y, x] = currPosition;
+    const carrots = garden[y][x];
+    garden[y][x] = 0;
+
+    return carrots;
+}
+
+/**
+ * Finds the position and value of cells in the
+ * 4 cardinal directions (WNES) from the currPosition,
+ * if they exist. Uses maxValueCoords to determine
+ * which of these positions has the highest value.
+ * @param {Array<Number>} currPosition [y, x] coords of the current position
+ * @param {Array<Array<Number>>} garden Matrix of carrot values
+ * @returns Coordinate pair in form of [y, x].
+ * Defaults to an empty Array if no next position.
+ */
+function findNextPosition(currPosition, garden) {
+    const [y, x] = currPosition;
+    const numCols = garden[0].length - 1;
+    const numRows = garden.length - 1;
+
+    // Inserted in WNES order
+    // Will automatically resolve ties.
+    const coords = [];
+
+    // Check to ensure position is valid position in matrix
+    // W cell, ensures position isn't beyond left boundary.
+    if (x - 1 >= 0) {
+        coords.push({ position: [y, x - 1], value: garden[y][x - 1] });
+    }
+    // N cell, ensures position isn't beyond top boundary.
+    if (y - 1 >= 0) {
+        coords.push({ position: [y - 1, x], value: garden[y - 1][x] });
+    }
+    // E cell, ensures position isn't beyond right boundary.
+    if (x + 1 <= numCols) {
+        coords.push({ position: [y, x + 1], value: garden[y][x + 1] });
+    }
+    // S cell, ensures position isn't beyond bottom boundary.
+    if (y + 1 <= numRows) {
+        coords.push({ position: [y + 1, x], value: garden[y + 1][x] });
+    }
+
+    return maxValueCoords(coords);
 }
 
 
