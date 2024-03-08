@@ -1,4 +1,3 @@
-
 /**
  * Given a garden, find out how many carrots a
  * leveret will eat before taking a nap! Rules:
@@ -34,7 +33,7 @@ function carrotsEaten(garden) {
 
 /**
  * Function that finds the 1, 2, or 4 possible starting
- * cells and determines starting cell based on carrot count.
+ * cells and determines starting cell based on highest carrot count.
  * @param {Array<Array<Number>>} garden Matrix of carrot counts
  * @returns {Array<Number>} Garden coordinate in form of [y, x]
  */
@@ -42,20 +41,36 @@ function findStartPosition(garden) {
     const isColsEven = isEven(garden.length);
     const isRowsEven = isEven(garden[0].length);
 
+    /*
+   We will always have 1 possible starting cell.
+    [ ] [ ]
+    [ ] [X]
+   */
     let y = Math.floor(garden.length / 2);
     let x = Math.floor(garden[0].length / 2);
 
     const coords = [];
-
     coords.push({y, x, value: garden[y][x]})
 
+    /*
+     [ ] [ ]
+     [?] [X]
+    */
     if (isRowsEven) {
         coords.push({y, x: x - 1, value: garden[y][x - 1]});
     }
 
+    /*
+     [ ] [?]
+     [ ] [X]
+    */
     if (isColsEven) {
         coords.push({y: y - 1, x, value: garden[y - 1][x]})
 
+        /*
+        [?] [ ]
+        [ ] [X]
+        */
         if (isRowsEven) {
             coords.push({y: y - 1, x: x - 1, value: garden[y - 1][x - 1]});
         }
@@ -65,19 +80,11 @@ function findStartPosition(garden) {
 }
 
 /**
- * Helper function that determines if a num
- * is even
- */
-function isEven(num) {
-    return num % 2 === 0;
-}
-
-/**
- * Takes a list of coord objects and finds
- * the coord that has the highest value greater than 0.
- * @param {Array<Object>} coords Obj format of {position: {y, x}, value: 0}
- * @returns Coordinate pair in form of [y, x].
- * Defaults to an empty Array if no values > 0
+ * Takes an array of coordinate objects and returns
+ * the coordinate with the highest value.
+ * @param {Array<Object>} coords Obj format of {y, x, value: 0}
+ * @returns Coordinate pair of [y, x].
+ * Defaults to an empty Array if no values > 0.
  */
 function maxValueCoords(coords) {
     let max = 0;
@@ -85,7 +92,7 @@ function maxValueCoords(coords) {
     for (let coord of coords) {
         if (max < coord.value) {
             max = coord.value;
-            position = [coord.position.y, coord.position.x];
+            position = [coord.y, coord.x];
         }
     }
 
@@ -93,9 +100,9 @@ function maxValueCoords(coords) {
 }
 
 /**
- * Eats the number of carrots in the currPosition of
- * the garden and updates value of currPosition to 0.
- * @param {Array<Number>} currPosition [y, x] coordinate
+ * Updates the number of carrots in the currPosition of
+ * the garden to 0.
+ * @param {Array<Number>} currPosition [y, x] coordinates
  * @param {Array<Array<Number>>} garden Matrix of carrot values
  * @returns Number of carrots eaten from currPosition
  */
@@ -122,32 +129,34 @@ function findNextPosition(currPosition, garden) {
     const numCols = garden[0].length - 1;
     const numRows = garden.length - 1;
 
-    // Inserted in WNES order
-    // Will automatically resolve ties.
+    // Inserted in WNES order, will automatically resolve ties.
     const coords = [];
 
     // Check to ensure position is valid position in matrix
     // W cell, ensures position isn't beyond left boundary.
     if (x - 1 >= 0) {
-        coords.push({ position: [y, x - 1], value: garden[y][x - 1] });
+        coords.push({y, x: x - 1, value: garden[y][x - 1]});
     }
     // N cell, ensures position isn't beyond top boundary.
     if (y - 1 >= 0) {
-        coords.push({ position: [y - 1, x], value: garden[y - 1][x] });
+        coords.push({y: y - 1, x, value: garden[y - 1][x]});
     }
     // E cell, ensures position isn't beyond right boundary.
     if (x + 1 <= numCols) {
-        coords.push({ position: [y, x + 1], value: garden[y][x + 1] });
+        coords.push({y, x: x + 1, value: garden[y][x + 1]});
     }
     // S cell, ensures position isn't beyond bottom boundary.
     if (y + 1 <= numRows) {
-        coords.push({ position: [y + 1, x], value: garden[y + 1][x] });
+        coords.push({y: y + 1, x, value: garden[y + 1][x]});
     }
 
     return maxValueCoords(coords);
 }
 
+function isEven(num) {
+    return num % 2 === 0;
+}
 
 module.exports = {
-    carrotsEaten, highestDirection, findStart, findNearbyCells
+    carrotsEaten, findStartPosition
 }
