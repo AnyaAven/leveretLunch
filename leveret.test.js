@@ -32,7 +32,6 @@ test(
         expect(carrotsEaten(base1))
             .toStrictEqual(3)
     }
-
 )
 
 test(
@@ -40,7 +39,6 @@ test(
         expect(carrotsEaten(base2))
             .toStrictEqual(6)
     }
-
 )
 
 test(
@@ -48,7 +46,6 @@ test(
         expect(carrotsEaten(base3))
             .toStrictEqual(15)
     }
-
 )
 
 test(
@@ -56,7 +53,6 @@ test(
         expect(carrotsEaten(base4))
             .toStrictEqual(4)
     }
-
 )
 
 test(
@@ -64,7 +60,6 @@ test(
         expect(findStartPosition(base1))
             .toStrictEqual([1, 1])
     }
-
 )
 
 
@@ -73,19 +68,16 @@ test(
         expect(findStartPosition(base2))
             .toStrictEqual([2, 2])
     }
-
 )
 test(
     "findStart3", () => {
         expect(findStartPosition(base3))
             .toStrictEqual([1, 3])
     }
-
 )
 test(
     "findStart4", () => {
         expect(findStartPosition(base4))
             .toStrictEqual([1, 1])
     }
-
 )
